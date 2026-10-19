@@ -5,6 +5,9 @@
   --accent:#ff4d4d;
   --muted:#9aa4b2;
   --card:#0b1320;
+  --success:#27ae60;
+  --warning:#ffcc33;
+  --error:#ff4d4d;
 }
 *{box-sizing:border-box}
 body{font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, 'Hiragino Kaku Gothic ProN', 'Noto Sans JP', sans-serif; background:linear-gradient(180deg,#071017,#0a0f14); color:#e6eef5; margin:0; padding:0}
@@ -28,6 +31,12 @@ button{cursor:pointer}
 .import-export{display:flex; gap:8px; margin-top:12px}
 .muted{color:var(--muted); font-size:13px}
 .details-block{background:#06111a; padding:8px; border-radius:6px}
+.app-alert{margin-top:8px; padding:8px 12px; border-radius:6px; display:inline-block}
+.app-alert.info{background:rgba(39,174,96,0.08); color:var(--success); border:1px solid rgba(39,174,96,0.15)}
+.app-alert.error{background:rgba(255,77,77,0.06); color:var(--error); border:1px solid rgba(255,77,77,0.12)}
+.recently-saved{outline:2px solid rgba(39,174,96,0.3); animation: flash 2s ease-in-out}
+@keyframes flash{ 0%{box-shadow:0 0 0 rgba(39,174,96,0.45)} 50%{box-shadow:0 0 12px rgba(39,174,96,0.25)} 100%{box-shadow:none} }
+.input-error{outline:3px solid rgba(255,77,77,0.18)}
 @media(max-width:900px){
   .container{grid-template-columns:1fr; padding:12px}
   .panel-right{order:3}

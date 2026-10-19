@@ -10,6 +10,7 @@
   <header class="site-header">
     <h1>GT7 Setup Lab</h1>
     <p class="lead">車種選択 → パーツ選択 → セッティング生成 → 検証・記録</p>
+    <div id="app-alert" role="status" aria-live="polite" class="app-alert" style="display:none"></div>
   </header>
 
   <main class="container">
@@ -81,6 +82,7 @@
         <input id="file-input" type="file" accept="application/json, .csv" style="display:none">
       </div>
       <div id="compare-result"></div>
+      <div id="import-log" class="muted" aria-live="polite" style="margin-top:12px"></div>
     </section>
   </main>
 

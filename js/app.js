@@ -8,6 +8,18 @@ const state = {
   records: []
 }
 
+// UI helpers
+function showAlert(msg, type='info', timeout=4000){
+  const node = document.getElementById('app-alert');
+  if(!node) { alert(msg); return; }
+  node.textContent = msg; node.className = 'app-alert ' + (type==='error' ? 'error' : 'info'); node.style.display='inline-block';
+  if(timeout>0){ setTimeout(()=>{ node.style.display='none'; }, timeout); }
+}
+
+function appendImportLog(msg){
+  const node = document.getElementById('import-log'); if(!node) return; const p = document.createElement('div'); p.textContent = msg; node.appendChild(p);
+}
+
 async function loadSampleData(){
   try{
     const res = await fetch('data/vehicles.more.sample.json');
@@ -86,14 +98,15 @@ function attachHandlers(){
 async function generateSetting(){
   const resultDiv = document.getElementById('generation-result');
   resultDiv.innerHTML = '';
-  if(!state.selectedVehicle){ resultDiv.textContent='車種を選択してください'; return; }
+  if(!state.selectedVehicle){ showAlert('車種を選択してください', 'error'); document.getElementById('search').focus(); const vl = document.getElementById('vehicle-list'); vl.classList.add('input-error'); setTimeout(()=>vl.classList.remove('input-error'),2000); return; }
   const payload = { vehicle: state.selectedVehicle, parts: Array.from(state.parts), concept: state.concept }
   try{
     const generated = generate(payload);
     state.generated = generated;
     renderGenerated(generated);
     renderTests(generated.tests || []);
-  } catch(err){ resultDiv.textContent = '生成中にエラーが発生しました: '+err.message }
+    showAlert('セッティングを生成しました', 'info', 3000);
+  } catch(err){ resultDiv.textContent = '生成中にエラーが発生しました: '+err.message; showAlert('生成中にエラーが発生しました: '+err.message, 'error', 6000); }
 }
 
 function renderGenerated(gen){
@@ -130,20 +143,25 @@ function renderTests(tests){
 }
 
 function saveCurrentSetting(){
-  if(!state.generated) { alert('先にセッティングを生成してください'); return; }
+  if(!state.generated) { showAlert('先にセッティングを生成してください','error'); return; }
   const id = 's_'+Date.now();
   const rec = { id, vehicle: state.selectedVehicle.id, vehicle_label: `${state.selectedVehicle.maker} ${state.selectedVehicle.model}`, name: state.generated.summary, generated: state.generated, parts: Array.from(state.parts), concept: state.concept, created_at: new Date().toISOString() };
   state.records.push(rec);
   localStorage.setItem('gt7_records', JSON.stringify(state.records));
   renderRecords();
-  alert('保存しました');
+  // highlight newly saved entry
+  setTimeout(()=>{
+    const el = document.querySelector(`[data-record-id="${rec.id}"]`);
+    if(el){ el.classList.add('recently-saved'); setTimeout(()=>el.classList.remove('recently-saved'),2500); }
+  },50);
+  showAlert('セッティングを保存しました','info',2500);
 }
 
 function renderRecords(){
   const node = document.getElementById('records'); node.innerHTML='';
   if(state.records.length===0){ node.textContent='保存済みセッティングはありません'; return; }
   state.records.forEach(r=>{
-    const el = document.createElement('div'); el.className='generation-item';
+    const el = document.createElement('div'); el.className='generation-item'; el.setAttribute('data-record-id', r.id);
     el.innerHTML = `<div style="display:flex;justify-content:space-between;align-items:center"><div><input type="checkbox" class="select-record" data-id="${r.id}"> <strong>${escapeHtml(r.name)}</strong> - ${escapeHtml(r.vehicle_label)} <div><small>${r.created_at}</small></div></div><div><button class="load-btn" data-id="${r.id}">読み込み</button> <button class="restore-btn" data-id="${r.id}">復元</button></div></div>`;
     node.appendChild(el);
   })
@@ -152,14 +170,15 @@ function renderRecords(){
 }
 
 function loadRecord(id){
-  const r = state.records.find(x=>x.id===id); if(!r) return; state.generated = r.generated; state.selectedVehicle = state.vehicles.find(v=>v.id===r.vehicle) || state.selectedVehicle; renderGenerated(state.generated); renderTests(state.generated.tests || []);
-  alert('セッティングを読み込みました（表示のみ）');
+  const r = state.records.find(x=>x.id===id); if(!r) { showAlert('指定セッティングが見つかりません','error'); return; }
+  state.generated = r.generated; state.selectedVehicle = state.vehicles.find(v=>v.id===r.vehicle) || state.selectedVehicle; renderGenerated(state.generated); renderTests(state.generated.tests || []);
+  showAlert('セッティングを読み込みました（表示のみ）','info',2000);
 }
 
 function restoreRecord(id){
-  const r = state.records.find(x=>x.id===id); if(!r) return; // overwrite current generated and save as new
+  const r = state.records.find(x=>x.id===id); if(!r) { showAlert('指定セッティングが見つかりません','error'); return; }
   state.generated = r.generated; state.selectedVehicle = state.vehicles.find(v=>v.id===r.vehicle) || state.selectedVehicle; state.parts = new Set(r.parts||[]); state.concept = r.concept; renderGenerated(state.generated); renderTests(state.generated.tests || []);
-  alert('セッティングを復元しました（現在の状態として反映）');
+  showAlert('セッティングを復元しました（現在の状態として反映）','info',2000);
 }
 
 function exportRecords(){
@@ -167,27 +186,30 @@ function exportRecords(){
   const blob = new Blob([dataStr], {type:'application/json'});
   const url = URL.createObjectURL(blob);
   const a = document.createElement('a'); a.href=url; a.download='gt7_records.json'; a.click();
+  showAlert('走行記録をJSONでエクスポートしました','info',2500);
 }
 
 function exportGeneratedJSON(){
-  if(!state.generated) { alert('先に生成してください'); return; }
+  if(!state.generated) { showAlert('先に生成してください','error'); return; }
   const blob = new Blob([JSON.stringify(state.generated, null, 2)], {type:'application/json'});
   const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download='gt7_setting.json'; a.click();
+  showAlert('生成済みセッティングをJSONで出力しました','info',2000);
 }
 
 function exportGeneratedCSV(){
-  if(!state.generated) { alert('先に生成してください'); return; }
+  if(!state.generated) { showAlert('先に生成してください','error'); return; }
   const rows = [['name','value','confidence','reason','apply']];
   state.generated.items.forEach(it=> rows.push([it.name, (it.value+'').replace(/\n/g,' '), it.confidence, (it.reason+'').replace(/\n/g,' '), (it.apply||'').replace(/\n/g,' ')]));
   const csv = rows.map(r=>r.map(c=>`"${(''+c).replace(/"/g,'""')}"`).join(',')).join('\n');
   const blob = new Blob([csv], {type:'text/csv'}); const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download='gt7_setting.csv'; a.click();
+  showAlert('生成済みセッティングをCSVで出力しました','info',2000);
 }
 
 function handleFileImport(e){
   const f = e.target.files[0]; if(!f) return;
   const reader = new FileReader();
   reader.onload = ()=>{
-    try{ const obj = JSON.parse(reader.result); if(Array.isArray(obj)) { state.records = obj; localStorage.setItem('gt7_records', JSON.stringify(state.records)); renderRecords(); alert('インポート完了'); } else { alert('JSON は配列を指定してください'); } } catch(err){ alert('JSON の読み込みに失敗しました: '+err.message); }
+    try{ const obj = JSON.parse(reader.result); if(Array.isArray(obj)) { state.records = obj; localStorage.setItem('gt7_records', JSON.stringify(state.records)); renderRecords(); appendImportLog(`Imported ${obj.length} records from ${f.name}`); showAlert('インポート完了','info',2000); } else { appendImportLog('JSONは配列である必要があります'); showAlert('JSONは配列である必要があります','error',4000); } } catch(err){ appendImportLog('JSONの読み込みに失敗しました: '+err.message); showAlert('JSONの読み込みに失敗しました','error',5000); }
   }
   reader.readAsText(f);
 }
@@ -197,20 +219,25 @@ function handleVehicleImport(e){
   reader.onload = ()=>{
     const text = reader.result;
     if(f.name.endsWith('.json')){
-      try{ const obj = JSON.parse(text); if(Array.isArray(obj)) { state.vehicles = state.vehicles.concat(obj); localStorage.setItem('gt7_vehicles', JSON.stringify(state.vehicles)); renderVehicleList(); alert('車両データ(JSON)をインポートしました'); } else { alert('車両JSONは配列である必要があります'); } } catch(err){ alert('JSON 読み込み失敗: '+err.message); }
+      try{ const obj = JSON.parse(text); if(Array.isArray(obj)) { state.vehicles = state.vehicles.concat(obj); localStorage.setItem('gt7_vehicles', JSON.stringify(state.vehicles)); renderVehicleList(); appendImportLog(`Imported ${obj.length} vehicles from ${f.name}`); showAlert('車両データ(JSON)をインポートしました','info',2500); } else { appendImportLog('車両JSONは配列である必要があります'); showAlert('車両JSONは配列である必要があります','error',4000); } } catch(err){ appendImportLog('JSON 読み込み失敗: '+err.message); showAlert('JSON 読み込み失敗','error',5000); }
     } else if(f.name.endsWith('.csv')){
-      // improved CSV parse (naive but handles quoted fields)
-      const rows = parseCSV(text);
-      if(rows.length<1){ alert('CSVにデータがありません'); return; }
-      const header = rows[0];
-      const arr = rows.slice(1).map(cols=>{
-        const obj={}; header.forEach((h,i)=> obj[h]=cols[i]??'' ); return obj;
-      });
-      arr.forEach(r=>{
-        state.vehicles.push({ id:r.id || `${r.maker}-${r.model}-${r.year}`, maker:r.maker, model:r.model, year:r.year, drive:r.drive, power_hp: r.power_hp?Number(r.power_hp):null, torque_nm:r.torque_nm?Number(r.torque_nm):null, weight_kg:r.weight_kg?Number(r.weight_kg):null, pp:r.pp?Number(r.pp):null, url:r.url, source:r.source||'csv', verified:r.verified==='true', last_checked:r.last_checked||null });
-      });
-      localStorage.setItem('gt7_vehicles', JSON.stringify(state.vehicles)); renderVehicleList(); alert('車両データ(CSV)をインポートしました');
-    } else { alert('対応していないファイル形式です'); }
+      // improved CSV parse (handles quoted fields and reports errors)
+      try{
+        const rows = parseCSV(text);
+        if(rows.length<1){ appendImportLog('CSVにデータがありません'); showAlert('CSVにデータがありません','error',3000); return; }
+        const header = rows[0];
+        // simple validation
+        if(!header.includes('maker') || !header.includes('model')){ appendImportLog('CSVヘッダに maker, model カラムが必要です'); showAlert('CSVヘッダが不正です（maker, model が必要）','error',4000); return; }
+        const arr = rows.slice(1).map((cols, idx)=>{
+          if(cols.length !== header.length){ appendImportLog(`行 ${idx+2} のカラム数がヘッダと一致しません`); }
+          const obj={}; header.forEach((h,i)=> obj[h]=cols[i]??'' ); return obj;
+        });
+        arr.forEach(r=>{
+          state.vehicles.push({ id:r.id || `${r.maker}-${r.model}-${r.year}`, maker:r.maker, model:r.model, year:r.year, drive:r.drive, power_hp: r.power_hp?Number(r.power_hp):null, torque_nm:r.torque_nm?Number(r.torque_nm):null, weight_kg:r.weight_kg?Number(r.weight_kg):null, pp:r.pp?Number(r.pp):null, url:r.url, source:r.source||'csv', verified:r.verified==='true', last_checked:r.last_checked||null });
+        });
+        localStorage.setItem('gt7_vehicles', JSON.stringify(state.vehicles)); renderVehicleList(); appendImportLog(`Imported ${arr.length} vehicles from ${f.name}`); showAlert('車両データ(CSV)をインポートしました','info',2500);
+      } catch(err){ appendImportLog('CSV読み込みエラー: '+err.message); showAlert('CSV読み込みエラー','error',5000); }
+    } else { appendImportLog('対応していないファイル形式です'); showAlert('対応していないファイル形式です','error',3000); }
   };
   reader.readAsText(f);
 }
@@ -218,11 +245,12 @@ function handleVehicleImport(e){
 function exportVehiclesJSON(){
   const blob = new Blob([JSON.stringify(state.vehicles, null, 2)], {type:'application/json'});
   const url = URL.createObjectURL(blob); const a = document.createElement('a'); a.href=url; a.download='gt7_vehicles.json'; a.click();
+  showAlert('車両データをエクスポートしました','info',2000);
 }
 
 function compareRecords(){
   const checked = Array.from(document.querySelectorAll('.select-record:checked')).map(c=>c.dataset.id);
-  if(checked.length!==2){ alert('比較するセッティングを2つ選択してください'); return; }
+  if(checked.length!==2){ showAlert('比較するセッティングを2つ選択してください','error'); return; }
   const r1 = state.records.find(r=>r.id===checked[0]); const r2 = state.records.find(r=>r.id===checked[1]);
   if(!r1 || !r2) return; const out = document.getElementById('compare-result'); out.innerHTML='';
   const h = document.createElement('h3'); h.textContent='セッティング比較'; out.appendChild(h);
@@ -274,17 +302,20 @@ function loadRecords(){
 }
 
 function parseCSV(text){
-  const rows=[]; const re = /(?:\s*"([^"]*(?:""[^"]*)*)"\s*|([^,]+)|)/g; // naive
-  const lines = text.split(/\r?\n/);
-  for(const line of lines){ if(!line.trim()) continue; const cols=[]; let i=0; let str=line; // simple split but handle quoted
-    let cur=''; let inQuotes=false;
-    for(let j=0;j<str.length;j++){
-      const ch=str[j];
-      if(ch==='"') { if(inQuotes && str[j+1]==='"'){ cur+='"'; j++; } else inQuotes=!inQuotes; }
-      else if(ch===',' && !inQuotes){ cols.push(cur); cur=''; }
-      else cur+=ch;
+  const rows=[]; const lines = text.split(/\r?\n/);
+  for(let li=0; li<lines.length; li++){
+    const line = lines[li]; if(!line) continue;
+    const cols=[]; let cur=''; let inQuotes=false;
+    for(let j=0;j<line.length;j++){
+      const ch=line[j];
+      if(ch==='"'){
+        if(inQuotes && line[j+1]==='"'){ cur+='"'; j++; }
+        else { inQuotes=!inQuotes; }
+      } else if(ch===',' && !inQuotes){ cols.push(cur); cur=''; }
+      else { cur+=ch; }
     }
     cols.push(cur);
+    // trim surrounding quotes and whitespace
     rows.push(cols.map(c=>c.trim().replace(/^"|"$/g,'')));
   }
   return rows;
