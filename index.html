@@ -28,6 +28,12 @@
       </div>
       <ul id="vehicle-list" class="list"></ul>
       <div id="vehicle-detail" class="detail"></div>
+
+      <div style="margin-top:12px">
+        <button id="import-vehicles">車両データをインポート</button>
+        <button id="export-vehicles">車両データをエクスポート</button>
+        <input id="vehicle-file-input" type="file" accept="application/json,.csv" style="display:none" />
+      </div>
     </section>
 
     <section class="panel panel-center">
@@ -52,9 +58,17 @@
       <div class="actions">
         <button id="generate">セッティング生成</button>
         <button id="save">セッティング保存</button>
+        <button id="export-setting">生成をJSONでエクスポート</button>
+        <button id="export-setting-csv">生成をCSVでエクスポート</button>
       </div>
 
       <div id="generation-result"></div>
+
+      <div id="test-procedures"></div>
+
+      <div style="margin-top:12px">
+        <button id="troubleshoot-btn">症状別トラブルシューティング</button>
+      </div>
     </section>
 
     <section class="panel panel-right">
@@ -63,8 +77,10 @@
       <div class="import-export">
         <button id="export-json">JSONエクスポート</button>
         <button id="import-json">JSONインポート</button>
+        <button id="compare-btn">セッティング比較</button>
         <input id="file-input" type="file" accept="application/json, .csv" style="display:none">
       </div>
+      <div id="compare-result"></div>
     </section>
   </main>
 
