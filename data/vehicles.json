@@ -1,0 +1,6 @@
+{
+  "vehicles": [
+    { "id": "nsx-type-s", "name": "NSX Type S", "notes": "sample" },
+    { "id": "nissan-gt-r", "name": "Nissan GT-R", "notes": "sample" }
+  ]
+}

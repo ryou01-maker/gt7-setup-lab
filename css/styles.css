@@ -1,0 +1,18 @@
+/* Minimal styles for GT7 Setup Lab MVP */
+:root{--bg:#0b1020;--card:#0f1724;--accent:#ffcc33;--muted:#9aa4bf;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,'Helvetica Neue',Arial}
+body{background:linear-gradient(180deg,#071021,#091423);color:#e6eef8;padding:24px}
+header h1{margin:0 0 6px;font-size:20px}
+main{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px}
+.controls, .form, .result{background:rgba(255,255,255,0.03);padding:12px;border-radius:8px}
+.controls label{display:block;margin-bottom:6px}
+#vehicle-select{width:100%;padding:6px;border-radius:4px}
+.buttons{margin-top:10px;display:flex;gap:8px}
+button{background:var(--accent);border:none;padding:8px 10px;border-radius:6px;cursor:pointer}
+.form h2,.result h2{margin-top:0}
+.row{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.row label{width:140px;color:var(--muted)}
+pre#output{background:#051224;padding:12px;border-radius:6px;overflow:auto}
+footer{margin-top:16px;color:var(--muted)}
+@media(max-width:800px){main{grid-template-columns:1fr}}

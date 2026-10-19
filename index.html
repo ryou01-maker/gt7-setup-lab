@@ -1,97 +1,48 @@
 <!doctype html>
-<html lang="ja">
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>GT7 Setup Lab — MVP</title>
-  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
-  <header class="site-header">
-    <h1>GT7 Setup Lab</h1>
-    <p class="lead">車種選択 → パーツ選択 → セッティング生成 → 検証・記録</p>
-    <div id="app-alert" role="status" aria-live="polite" class="app-alert" style="display:none"></div>
+  <header>
+    <h1>GT7 Setup Lab — MVP</h1>
+    <p>Generate and store simple car setups for Gran Turismo 7 (static demo).</p>
   </header>
 
-  <main class="container">
-    <section class="panel panel-left">
-      <h2>車種選択</h2>
-      <div class="filters">
-        <input id="search" placeholder="メーカー・車名で検索" aria-label="検索" />
-        <select id="filter-drive" aria-label="駆動方式フィルタ">
-          <option value="">駆動方式すべて</option>
-          <option value="FF">FF</option>
-          <option value="FR">FR</option>
-          <option value="MR">MR</option>
-          <option value="RR">RR</option>
-          <option value="4WD">4WD</option>
-        </select>
-      </div>
-      <ul id="vehicle-list" class="list" role="listbox"></ul>
-      <div id="vehicle-detail" class="detail" aria-live="polite"></div>
+  <main>
+    <section class="controls">
+      <label for="vehicle-select">Vehicle</label>
+      <select id="vehicle-select"></select>
 
-      <div style="margin-top:12px">
-        <button id="import-vehicles">車両データをインポート</button>
-        <button id="export-vehicles">車両データをエクスポート</button>
-        <input id="vehicle-file-input" type="file" accept="application/json,.csv" style="display:none" />
+      <div class="buttons">
+        <button id="generate-btn">Generate Setup</button>
+        <button id="save-btn">Save Current</button>
+        <button id="load-btn">Load Saved</button>
+        <button id="reset-btn">Reset</button>
       </div>
     </section>
 
-    <section class="panel panel-center">
-      <h2>装着パーツ</h2>
-      <form id="parts-form">
-        <label><input type="checkbox" name="parts" value="tires"> タイヤ</label>
-        <label><input type="checkbox" name="parts" value="brakes"> ブレーキ</label>
-        <label><input type="checkbox" name="parts" value="suspension"> サスペンション</label>
-        <label><input type="checkbox" name="parts" value="arb"> アンチロールバー</label>
-        <label><input type="checkbox" name="parts" value="diff"> デファレンシャル</label>
-        <label><input type="checkbox" name="parts" value="aero"> エアロ/ウイング</label>
-      </form>
-
-      <h2>セッティング方針</h2>
-      <select id="concept">
-        <option value="stability">A. 安定性重視・オールラウンド</option>
-        <option value="grip">B. グリップ・ラップタイム重視</option>
-        <option value="agility">C. 回頭性・ハンドリング重視</option>
-        <option value="drift">D. ドリフト・遊び重視</option>
-      </select>
-
-      <div class="actions">
-        <button id="generate">セッティング生成</button>
-        <button id="save">セッティング保存</button>
-        <button id="export-setting">生成をJSONでエクスポート</button>
-        <button id="export-setting-csv">生成をCSVでエクスポート</button>
-      </div>
-
-      <div id="generation-result"></div>
-
-      <div id="test-procedures"></div>
-
-      <div style="margin-top:12px">
-        <button id="troubleshoot-btn">症状別トラブルシューティング</button>
-      </div>
+    <section class="form">
+      <h2>Setup</h2>
+      <div class="row"><label>Ride Height</label><input id="rideHeight" type="range" min="0" max="50" value="25"></div>
+      <div class="row"><label>Spring Rate (F/R)</label><input id="springF" type="number" min="0" max="100" value="30"> / <input id="springR" type="number" min="0" max="100" value="30"></div>
+      <div class="row"><label>ARB (F/R)</label><input id="arbF" type="number" min="0" max="50" value="10"> / <input id="arbR" type="number" min="0" max="50" value="10"></div>
+      <div class="row"><label>Brake Bias</label><input id="brakeBias" type="range" min="40" max="60" value="50"></div>
     </section>
 
-    <section class="panel panel-right">
-      <h2>走行記録 / 比較</h2>
-      <div id="records"></div>
-      <div class="import-export">
-        <button id="export-json">JSONエクスポート</button>
-        <button id="import-json">JSONインポート</button>
-        <button id="compare-btn">セッティング比較</button>
-        <input id="file-input" type="file" accept="application/json, .csv" style="display:none">
-      </div>
-      <div id="compare-result"></div>
-      <div id="import-log" class="muted" aria-live="polite" style="margin-top:12px"></div>
+    <section class="result">
+      <h2>Generated / Saved Setup</h2>
+      <pre id="output">(no setup)</pre>
     </section>
   </main>
 
-  <footer class="site-footer">
-    <small>データ出典は明記してください。自動スクレイピングは行いません。localStorage に保存されます。</small>
+  <footer>
+    <small>Static MVP — saves per-vehicle setups to localStorage.</small>
   </footer>
 
-<script src="js/ui/collapsible.js"></script>
-<script src="js/engine/generator.js"></script>
-<script src="js/app.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>
