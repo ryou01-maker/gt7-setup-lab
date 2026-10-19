@@ -1,0 +1,32 @@
+[
+  {
+    "id": "toyota-supra-1998",
+    "maker": "Toyota",
+    "model": "Supra RZ",
+    "year": "1998",
+    "drive": "FR",
+    "power_hp": 320,
+    "torque_nm": 431,
+    "weight_kg": 1550,
+    "pp": null,
+    "url": "https://www.gran-turismo.com/us/gt7/car/xxx/",
+    "source": "manual entry",
+    "verified": false,
+    "last_checked": null
+  },
+  {
+    "id": "nissan-skyline-r34",
+    "maker": "Nissan",
+    "model": "Skyline GT-R (R34)",
+    "year": "1999",
+    "drive": "4WD",
+    "power_hp": 280,
+    "torque_nm": 392,
+    "weight_kg": 1480,
+    "pp": null,
+    "url": "https://www.gran-turismo.com/us/gt7/car/yyy/",
+    "source": "manual entry",
+    "verified": false,
+    "last_checked": null
+  }
+]

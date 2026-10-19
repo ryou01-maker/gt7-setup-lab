@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>GT7 Setup Lab — MVP</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <h1>GT7 Setup Lab</h1>
+    <p class="lead">車種選択 → パーツ選択 → セッティング生成 → 検証・記録</p>
+  </header>
+
+  <main class="container">
+    <section class="panel panel-left">
+      <h2>車種選択</h2>
+      <div class="filters">
+        <input id="search" placeholder="メーカー・車名で検索" />
+        <select id="filter-drive">
+          <option value="">駆動方式すべて</option>
+          <option value="FF">FF</option>
+          <option value="FR">FR</option>
+          <option value="MR">MR</option>
+          <option value="RR">RR</option>
+          <option value="4WD">4WD</option>
+        </select>
+      </div>
+      <ul id="vehicle-list" class="list"></ul>
+      <div id="vehicle-detail" class="detail"></div>
+    </section>
+
+    <section class="panel panel-center">
+      <h2>装着パーツ</h2>
+      <form id="parts-form">
+        <label><input type="checkbox" name="parts" value="tires"> タイヤ</label>
+        <label><input type="checkbox" name="parts" value="brakes"> ブレーキ</label>
+        <label><input type="checkbox" name="parts" value="suspension"> サスペンション</label>
+        <label><input type="checkbox" name="parts" value="arb"> アンチロールバー</label>
+        <label><input type="checkbox" name="parts" value="diff"> デファレンシャル</label>
+        <label><input type="checkbox" name="parts" value="aero"> エアロ/ウイング</label>
+      </form>
+
+      <h2>セッティング方針</h2>
+      <select id="concept">
+        <option value="stability">A. 安定性重視・オールラウンド</option>
+        <option value="grip">B. グリップ・ラップタイム重視</option>
+        <option value="agility">C. 回頭性・ハンドリング重視</option>
+        <option value="drift">D. ドリフト・遊び重視</option>
+      </select>
+
+      <div class="actions">
+        <button id="generate">セッティング生成</button>
+        <button id="save">セッティング保存</button>
+      </div>
+
+      <div id="generation-result"></div>
+    </section>
+
+    <section class="panel panel-right">
+      <h2>走行記録 / 比較</h2>
+      <div id="records"></div>
+      <div class="import-export">
+        <button id="export-json">JSONエクスポート</button>
+        <button id="import-json">JSONインポート</button>
+        <input id="file-input" type="file" accept="application/json, .csv" style="display:none">
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <small>データ出典は明記してください。自動スクレイピングは行いません。</small>
+  </footer>
+
+<script src="js/app.js"></script>
+<script src="js/engine/generator.js"></script>
+</body>
+</html>
