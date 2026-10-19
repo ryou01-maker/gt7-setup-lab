@@ -10,7 +10,7 @@ function generate(payload){
 
   // Camber
   if(parts.includes('tires') || parts.includes('suspension')){
-    if(concept==='grip') push('フロントキャンバー', '-2.0° 前後', 'コーナリング中のタイヤ接地面を増やしグリップを提高', '理論ベース', '適合: 調整可能なキャンバーボルト/サスペンション');
+    if(concept==='grip') push('フロントキャンバー', '-2.0° 前後', 'コーナリング中のタイヤ接地面を増やしグリップを提高', '理論ベース', '適合: 調整可能');
     else if(concept==='agility') push('フロントキャンバー', '-1.8° 前後', '初期応答を改善', '理論ベース', '適合: 調整可能');
     else if(concept==='stability') push('フロントキャンバー', '-1.5°', '安定性とタイヤ摩耗のバランス', '理論ベース');
     else if(concept==='drift') push('フロントキャンバー', '-1.0°', 'ドリフト時の舵角と荷重移動を優先', '暫定推定');

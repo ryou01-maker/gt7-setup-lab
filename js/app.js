@@ -36,7 +36,7 @@ function renderVehicleList(filter=''){
   const ul = document.getElementById('vehicle-list');
   ul.innerHTML = '';
   const drive = document.getElementById('filter-drive').value;
-  const q = document.getElementById('search').value.toLowerCase();
+  const q = (document.getElementById('search').value || '').toLowerCase();
   state.vehicles.filter(v=>{
     if(drive && v.drive !== drive) return false;
     if(q && !( (v.maker||'').toLowerCase().includes(q) || (v.model||'').toLowerCase().includes(q))) return false;
@@ -57,14 +57,25 @@ function selectVehicle(id){
   const d = document.getElementById('vehicle-detail');
   d.innerHTML = '';
   if(!v) return;
+  // escape fields to avoid injection if data is untrusted
+  const maker = escapeHtml(v.maker);
+  const model = escapeHtml(v.model);
+  const year = escapeHtml(v.year);
+  const drive = escapeHtml(v.drive ?? '不明');
+  const power = escapeHtml(v.power_hp ?? '不明');
+  const weight = escapeHtml(v.weight_kg ?? '不明');
+  const pp = escapeHtml(v.pp ?? '未設定');
+  const source = escapeHtml(v.source ?? '未指定');
+  const url = escapeHtml(v.url ?? '#');
+
   const html = `
-    <strong>${v.maker} ${v.model} (${v.year})</strong>
-    <div>駆動方式: ${v.drive ?? '不明'}</div>
-    <div>出力: ${v.power_hp ?? '不明'} HP</div>
-    <div>重量: ${v.weight_kg ?? '不明'} kg</div>
-    <div>PP: ${v.pp ?? '未設定'}</div>
-    <div>出典: ${v.source ?? '未指定'}</div>
-    <div><a href="${v.url ?? '#'}" target="_blank">公式ページ</a></div>
+    <strong>${maker} ${model} (${year})</strong>
+    <div>駆動方式: ${drive}</div>
+    <div>出力: ${power} HP</div>
+    <div>重量: ${weight} kg</div>
+    <div>PP: ${pp}</div>
+    <div>出典: ${source}</div>
+    <div><a href="${url}" target="_blank" rel="noopener noreferrer">公式ページ</a></div>
   `
   d.innerHTML = html;
 }
@@ -225,12 +236,13 @@ function handleVehicleImport(e){
       try{
         const rows = parseCSV(text);
         if(rows.length<1){ appendImportLog('CSVにデータがありません'); showAlert('CSVにデータがありません','error',3000); return; }
-        const header = rows[0];
+        const header = rows[0].map(h=>String(h||'').trim());
+        const headerLower = header.map(h=>h.toLowerCase());
         // simple validation
-        if(!header.includes('maker') || !header.includes('model')){ appendImportLog('CSVヘッダに maker, model カラムが必要です'); showAlert('CSVヘッダが不正です（maker, model が必要）','error',4000); return; }
+        if(!headerLower.includes('maker') || !headerLower.includes('model')){ appendImportLog('CSVヘッダに maker, model カラムが必要です'); showAlert('CSVヘッダが不正です（maker, model が必要）','error',4000); return; }
         const arr = rows.slice(1).map((cols, idx)=>{
           if(cols.length !== header.length){ appendImportLog(`行 ${idx+2} のカラム数がヘッダと一致しません`); }
-          const obj={}; header.forEach((h,i)=> obj[h]=cols[i]??'' ); return obj;
+          const obj={}; headerLower.forEach((h,i)=> obj[h]=cols[i]??'' ); return obj;
         });
         arr.forEach(r=>{
           state.vehicles.push({ id:r.id || `${r.maker}-${r.model}-${r.year}`, maker:r.maker, model:r.model, year:r.year, drive:r.drive, power_hp: r.power_hp?Number(r.power_hp):null, torque_nm:r.torque_nm?Number(r.torque_nm):null, weight_kg:r.weight_kg?Number(r.weight_kg):null, pp:r.pp?Number(r.pp):null, url:r.url, source:r.source||'csv', verified:r.verified==='true', last_checked:r.last_checked||null });
