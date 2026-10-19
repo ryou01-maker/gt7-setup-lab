@@ -16,8 +16,8 @@
     <section class="panel panel-left">
       <h2>車種選択</h2>
       <div class="filters">
-        <input id="search" placeholder="メーカー・車名で検索" />
-        <select id="filter-drive">
+        <input id="search" placeholder="メーカー・車名で検索" aria-label="検索" />
+        <select id="filter-drive" aria-label="駆動方式フィルタ">
           <option value="">駆動方式すべて</option>
           <option value="FF">FF</option>
           <option value="FR">FR</option>
@@ -26,8 +26,8 @@
           <option value="4WD">4WD</option>
         </select>
       </div>
-      <ul id="vehicle-list" class="list"></ul>
-      <div id="vehicle-detail" class="detail"></div>
+      <ul id="vehicle-list" class="list" role="listbox"></ul>
+      <div id="vehicle-detail" class="detail" aria-live="polite"></div>
 
       <div style="margin-top:12px">
         <button id="import-vehicles">車両データをインポート</button>
@@ -85,10 +85,11 @@
   </main>
 
   <footer class="site-footer">
-    <small>データ出典は明記してください。自動スクレイピングは行いません。</small>
+    <small>データ出典は明記してください。自動スクレイピングは行いません。localStorage に保存されます。</small>
   </footer>
 
-<script src="js/app.js"></script>
+<script src="js/ui/collapsible.js"></script>
 <script src="js/engine/generator.js"></script>
+<script src="js/app.js"></script>
 </body>
 </html>

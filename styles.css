@@ -1,6 +1,6 @@
-/* styles.css — basic responsive layout with motorsport feel */
+/* styles.css — basic responsive layout with motorsport feel, improved */
 :root{
-  --bg:#0b0d10; /* dark */
+  --bg:#0b0d10;
   --panel:#0f1720;
   --accent:#ff4d4d;
   --muted:#9aa4b2;
@@ -15,7 +15,8 @@ body{font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, 'Hiragino
 .panel{background:var(--panel); padding:12px; border-radius:8px; min-height:200px}
 .panel h2{margin:0 0 8px}
 .filters{display:flex; gap:8px; margin-bottom:8px}
-input, select, button{padding:8px; border-radius:6px; border:1px solid rgba(255,255,255,0.06); background:#07101a; color:inherit}
+input[type="text"], input[type="search"], select, button{padding:8px; border-radius:6px; border:1px solid rgba(255,255,255,0.06); background:#07101a; color:inherit}
+button{cursor:pointer}
 .list{list-style:none; padding:0; margin:8px 0; max-height:240px; overflow:auto}
 .list li{padding:8px; border-radius:6px; margin-bottom:6px; background:linear-gradient(90deg, rgba(255,255,255,0.01), rgba(255,255,255,0.02)); cursor:pointer}
 .list li:hover{outline:2px solid rgba(255,255,255,0.03)}
@@ -25,7 +26,10 @@ input, select, button{padding:8px; border-radius:6px; border:1px solid rgba(255,
 .generation-item{background:var(--card); padding:10px; margin:8px 0; border-radius:6px}
 .site-footer{padding:12px 18px; text-align:center; color:var(--muted); font-size:13px}
 .import-export{display:flex; gap:8px; margin-top:12px}
+.muted{color:var(--muted); font-size:13px}
+.details-block{background:#06111a; padding:8px; border-radius:6px}
 @media(max-width:900px){
   .container{grid-template-columns:1fr; padding:12px}
   .panel-right{order:3}
+  .actions{flex-direction:column}
 }
